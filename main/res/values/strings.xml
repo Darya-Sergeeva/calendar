@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Мое Приложение</string>
+    <string name="task_title_hint">Task Title</string>
+    <string name="subtask_title_hint">Subtask Title</string>
+    <string name="schedule_title_hint">Schedule Title</string>
+    <string name="color_hint">Color (e.g., #FF0000)</string>
+    <string name="date_hint">Date (e.g., 2024-06-03)</string>
+    <string name="save_task">Save Task</string>
+    <string name="save_subtask">Save Subtask</string>
+    <string name="save_schedule">Save Schedule</string>
+    <string name="add_task">Add Task</string>
+    <string name="add_schedule">Add Schedule</string>
+</resources>
