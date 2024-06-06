@@ -52,4 +52,3 @@ public class SubtaskAdapter extends ArrayAdapter<String> {
     }
 }
 
-

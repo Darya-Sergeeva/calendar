@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.CalendarView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -15,10 +14,13 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.applandeo.materialcalendarview.CalendarView;
+import com.applandeo.materialcalendarview.EventDay;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -55,12 +57,10 @@ public class MainActivity extends AppCompatActivity {
         loadTasksForSelectedDate();
         loadDatesWithTasks();
 
-        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(CalendarView view, int year, int month, int dayOfMonth) {
-                selectedDate = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth);
-                loadTasksForSelectedDate();
-            }
+        calendarView.setOnDayClickListener(eventDay -> {
+            Calendar clickedDayCalendar = eventDay.getCalendar();
+            selectedDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(clickedDayCalendar.getTime());
+            loadTasksForSelectedDate();
         });
 
         addTaskButton.setOnClickListener(new View.OnClickListener() {
@@ -145,8 +145,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void highlightDatesWithTasks() {
-        // TODO: Implement highlighting logic for dates with tasks in the CalendarView
-        // This may involve custom rendering or using a third-party library.
+        List<EventDay> events = new ArrayList<>();
+        for (String date : datesWithTasks) {
+            String[] parts = date.split("-");
+            int year = Integer.parseInt(parts[0]);
+            int month = Integer.parseInt(parts[1]) - 1;
+            int day = Integer.parseInt(parts[2]);
+
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(year, month, day);
+            events.add(new EventDay(calendar, R.drawable.ic_task_marker));
+        }
+        calendarView.setEvents(events);
     }
 
     private void showAddTaskDialog() {

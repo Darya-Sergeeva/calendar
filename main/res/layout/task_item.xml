@@ -1,42 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="16dp">
+    android:padding="8dp">
 
     <Button
         android:id="@+id/task_button"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:textColor="@color/primaryDark"
-        android:background="?attr/selectableItemBackground"/>
+        android:text="Task Name" />
 
     <TextView
         android:id="@+id/task_date"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/task_button"
+        android:text="Task Date"
         android:textSize="14sp"
-        android:textColor="@color/primary"/>
+        android:paddingTop="4dp" />
 
     <CheckBox
         android:id="@+id/task_done"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true"/>
+        android:text="Готово"
+        android:paddingTop="4dp" />
 
     <LinearLayout
         android:id="@+id/subtasks_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_below="@id/task_date"
-        android:layout_marginTop="8dp">
-    </LinearLayout>
-</RelativeLayout>
-
-
+        android:paddingTop="4dp" />
+</LinearLayout>
 
 

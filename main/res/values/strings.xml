@@ -9,6 +9,13 @@
     <string name="save_task">Save Task</string>
     <string name="save_subtask">Save Subtask</string>
     <string name="save_schedule">Save Schedule</string>
-    <string name="add_task">Add Task</string>
     <string name="add_schedule">Add Schedule</string>
+    <string name="add_task">Add Task</string>
+    <string name="task_name">Task Name</string>
+    <string name="task_date">Task Date</string>
+    <string name="subtask_name">Subtask Name</string>
+    <string name="delete_task">Delete Task</string>
+    <string name="delete_subtask">Delete Subtask</string>
+    <string name="add_subtask">Добавить подзадачу</string>
+    <string name="mark_as_done">Отметить как выполнено</string>
 </resources>

@@ -60,8 +60,7 @@ public class SubtaskActivity extends AppCompatActivity {
         subtaskListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                String subtask = subtasks.get(position);
-                deleteSubtask(subtask);
+                deleteSubtask(subtasks.get(position));
                 return true;
             }
         });
@@ -121,8 +120,8 @@ public class SubtaskActivity extends AppCompatActivity {
     private void deleteSubtask(String subtaskName) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.delete(DatabaseHelper.TABLE_SUBTASKS,
-                DatabaseHelper.COLUMN_SUBTASK_NAME + " = ? AND " + DatabaseHelper.COLUMN_TASK_ID + " = ?",
-                new String[]{subtaskName, String.valueOf(taskId)});
+                DatabaseHelper.COLUMN_TASK_ID + " = ? AND " + DatabaseHelper.COLUMN_SUBTASK_NAME + " = ?",
+                new String[]{String.valueOf(taskId), subtaskName});
 
         subtasks.remove(subtaskName);
         adapter.notifyDataSetChanged();

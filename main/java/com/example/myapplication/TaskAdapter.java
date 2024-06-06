@@ -49,7 +49,6 @@ public class TaskAdapter extends ArrayAdapter<Task> {
 
         viewHolder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
             task.setDone(isChecked);
-            // Update task status in the database
             SQLiteDatabase db = dbHelper.getWritableDatabase();
             ContentValues values = new ContentValues();
             values.put(DatabaseHelper.COLUMN_IS_DONE, isChecked ? 1 : 0);
@@ -57,7 +56,6 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         });
 
         viewHolder.taskButton.setOnClickListener(v -> {
-            // Handle task button click
             Intent intent = new Intent(getContext(), SubtaskActivity.class);
             intent.putExtra("taskId", task.getId());
             intent.putExtra("taskName", task.getName());
@@ -73,7 +71,6 @@ public class TaskAdapter extends ArrayAdapter<Task> {
             subtaskName.setText(subtask);
 
             subtaskDone.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                // Update subtask status in the database
                 SQLiteDatabase db = dbHelper.getWritableDatabase();
                 ContentValues values = new ContentValues();
                 values.put(DatabaseHelper.COLUMN_SUBTASK_NAME, subtask);
@@ -100,4 +97,5 @@ public class TaskAdapter extends ArrayAdapter<Task> {
         }
     }
 }
+
 

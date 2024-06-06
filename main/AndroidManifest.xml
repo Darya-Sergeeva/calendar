@@ -16,13 +16,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".SubtaskActivity"></activity>
+        <activity android:name=".SubtaskActivity" />
     </application>
 
-    <!-- Разрешение на запись и чтение данных -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 </manifest>
+
 
 
 
