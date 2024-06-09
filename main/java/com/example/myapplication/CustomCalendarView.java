@@ -1,36 +1,32 @@
 package com.example.myapplication;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.AttributeSet;
 import android.widget.CalendarView;
 
-import java.util.Set;
-
 public class CustomCalendarView extends CalendarView {
-
-    private Set<String> datesWithTasks;
+    public CustomCalendarView(Context context) {
+        super(context);
+        init();
+    }
 
     public CustomCalendarView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
     }
 
-    public void setDatesWithTasks(Set<String> datesWithTasks) {
-        this.datesWithTasks = datesWithTasks;
-        invalidate(); // Перерисовать календарь
+    public CustomCalendarView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init();
     }
 
-    @Override
-    protected void onDraw(android.graphics.Canvas canvas) {
-        super.onDraw(canvas);
-        // Логика для выделения дат с задачами
-        for (String date : datesWithTasks) {
-            // Пример выделения даты с задачами
-            int year = Integer.parseInt(date.substring(0, 4));
-            int month = Integer.parseInt(date.substring(5, 7)) - 1;
-            int day = Integer.parseInt(date.substring(8, 10));
-            // Нарисовать цветной кружок или квадрат вокруг даты
-        }
+    private void init() {
+        setWeekSeparatorLineColor(getResources().getColor(R.color.orange));
+        setFocusedMonthDateColor(getResources().getColor(R.color.orangeDark));
+        setUnfocusedMonthDateColor(getResources().getColor(R.color.orangeLight));
+        setWeekDayTextAppearance(R.style.CalendarWeekDayTextAppearance);
+        setDateTextAppearance(R.style.CalendarDateTextAppearance);
     }
 }
+
 

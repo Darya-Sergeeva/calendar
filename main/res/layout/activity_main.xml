@@ -3,36 +3,35 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivity">
 
-    <com.applandeo.materialcalendarview.CalendarView
+    <CalendarView
         android:id="@+id/calendarView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        app:headerColor="@color/colorPrimary"
-        app:selectionColor="@color/primary"
-        app:todayLabelColor="@color/primary"/>
+        android:layout_alignParentTop="true" />
 
-    <ListView
-        android:id="@+id/taskListView"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/taskRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_below="@id/calendarView"
-        android:layout_marginTop="16dp"
-        android:divider="@android:color/darker_gray"
-        android:dividerHeight="1dp"/>
+        android:layout_above="@+id/addTaskButton"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <Button
         android:id="@+id/addTaskButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_margin="16dp"
-        android:src="@drawable/baseline_control_point_duplicate_24"/>
+        android:layout_centerHorizontal="true"
+        android:text="Add Task" />
+
 </RelativeLayout>
+
+
+
 
 
 

@@ -1,26 +1,22 @@
 package com.example.myapplication;
 
-import android.content.ContentValues;
+import android.app.AlertDialog;
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.CalendarView;
 import android.widget.EditText;
-import android.widget.ListView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
-import com.applandeo.materialcalendarview.CalendarView;
-import com.applandeo.materialcalendarview.EventDay;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -30,13 +26,15 @@ import java.util.Set;
 public class MainActivity extends AppCompatActivity {
 
     private CalendarView calendarView;
-    private ListView taskListView;
-    private FloatingActionButton addTaskButton;
-    private DatabaseHelper dbHelper;
-    private TaskAdapter adapter;
-    private List<Task> tasks;
+    private RecyclerView taskRecyclerView;
+    private Button addTaskButton;
+    private TaskAdapter taskAdapter;
+    private List<Task> taskList;
+    private TaskRepository taskRepository;
+
+    private SimpleDateFormat dateFormat;
     private String selectedDate;
-    private Set<String> datesWithTasks;
+    private Set<String> taskDates;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,171 +42,113 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         calendarView = findViewById(R.id.calendarView);
-        taskListView = findViewById(R.id.taskListView);
+        taskRecyclerView = findViewById(R.id.taskRecyclerView);
         addTaskButton = findViewById(R.id.addTaskButton);
-        dbHelper = new DatabaseHelper(this);
 
-        tasks = new ArrayList<>();
-        datesWithTasks = new HashSet<>();
-        adapter = new TaskAdapter(this, R.layout.task_item, tasks);
-        taskListView.setAdapter(adapter);
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        selectedDate = dateFormat.format(new Date(calendarView.getDate()));
 
-        selectedDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-        loadTasksForSelectedDate();
-        loadDatesWithTasks();
-
-        calendarView.setOnDayClickListener(eventDay -> {
-            Calendar clickedDayCalendar = eventDay.getCalendar();
-            selectedDate = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(clickedDayCalendar.getTime());
-            loadTasksForSelectedDate();
-        });
-
-        addTaskButton.setOnClickListener(new View.OnClickListener() {
+        taskList = new ArrayList<>();
+        taskAdapter = new TaskAdapter(taskList, new TaskAdapter.OnTaskClickListener() {
             @Override
-            public void onClick(View v) {
-                showAddTaskDialog();
+            public void onTaskClick(Task task) {
+                openTaskDetail(task.getId());
             }
-        });
 
-        taskListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Task task = tasks.get(position);
-                Intent intent = new Intent(MainActivity.this, SubtaskActivity.class);
-                intent.putExtra("taskId", task.getId());
-                intent.putExtra("taskName", task.getName());
-                startActivity(intent);
-            }
-        });
-
-        taskListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                Task task = tasks.get(position);
+            public void onTaskDeleteClick(Task task) {
                 deleteTask(task);
-                return true;
             }
         });
+
+        taskRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        taskRecyclerView.setAdapter(taskAdapter);
+
+        taskRepository = new TaskRepository(this);
+
+        loadTasks();
+
+        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
+            @Override
+            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+                selectedDate = dateFormat.format(new Date(year - 1900, month, dayOfMonth));
+                loadTasksForSelectedDate();
+            }
+        });
+
+        addTaskButton.setOnClickListener(v -> addTask());
+    }
+
+    private void loadTasks() {
+        taskList.clear();
+        taskList.addAll(taskRepository.getAllTasks());
+        taskAdapter.notifyDataSetChanged();
+
+        taskDates = new HashSet<>();
+        for (Task task : taskList) {
+            taskDates.add(task.getDate());
+        }
+
+        calendarView.invalidate();
     }
 
     private void loadTasksForSelectedDate() {
-        tasks.clear();
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.query(DatabaseHelper.TABLE_TASKS,
-                null,
-                DatabaseHelper.COLUMN_TASK_DATE + " = ?",
-                new String[]{selectedDate},
-                null, null, null);
-
-        while (cursor.moveToNext()) {
-            int id = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_ID));
-            String taskName = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TASK_NAME));
-            String taskDate = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TASK_DATE));
-            boolean isDone = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_IS_DONE)) == 1;
-
-            Task task = new Task(id, taskName, taskDate, isDone);
-            loadSubtasksForTask(task);
-            tasks.add(task);
+        taskList.clear();
+        List<Task> allTasks = taskRepository.getAllTasks();
+        for (Task task : allTasks) {
+            if (task.getDate().equals(selectedDate)) {
+                taskList.add(task);
+            }
         }
-        cursor.close();
-        adapter.notifyDataSetChanged();
+        taskAdapter.notifyDataSetChanged();
     }
 
-    private void loadSubtasksForTask(Task task) {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.query(DatabaseHelper.TABLE_SUBTASKS,
-                new String[]{DatabaseHelper.COLUMN_SUBTASK_NAME},
-                DatabaseHelper.COLUMN_TASK_ID + " = ?",
-                new String[]{String.valueOf(task.getId())},
-                null, null, null);
-
-        while (cursor.moveToNext()) {
-            String subtaskName = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_SUBTASK_NAME));
-            task.addSubtask(subtaskName);
-        }
-        cursor.close();
-    }
-
-    private void loadDatesWithTasks() {
-        datesWithTasks.clear();
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.query(true, DatabaseHelper.TABLE_TASKS,
-                new String[]{DatabaseHelper.COLUMN_TASK_DATE},
-                null, null, null, null, null, null);
-
-        while (cursor.moveToNext()) {
-            String date = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_TASK_DATE));
-            datesWithTasks.add(date);
-        }
-        cursor.close();
-        highlightDatesWithTasks();
-    }
-
-    private void highlightDatesWithTasks() {
-        List<EventDay> events = new ArrayList<>();
-        for (String date : datesWithTasks) {
-            String[] parts = date.split("-");
-            int year = Integer.parseInt(parts[0]);
-            int month = Integer.parseInt(parts[1]) - 1;
-            int day = Integer.parseInt(parts[2]);
-
-            Calendar calendar = Calendar.getInstance();
-            calendar.set(year, month, day);
-            events.add(new EventDay(calendar, R.drawable.ic_task_marker));
-        }
-        calendarView.setEvents(events);
-    }
-
-    private void showAddTaskDialog() {
+    private void addTask() {
+        LayoutInflater inflater = LayoutInflater.from(this);
+        View dialogView = inflater.inflate(R.layout.dialog_add_task, null);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Добавить задачу");
-
-        final EditText input = new EditText(this);
-        builder.setView(input);
-
-        builder.setPositiveButton("Добавить", (dialog, which) -> {
-            String taskName = input.getText().toString();
-            if (!taskName.isEmpty()) {
-                addTask(taskName);
+        builder.setView(dialogView);
+        builder.setTitle("Add Task");
+        builder.setPositiveButton("Add", (dialog, which) -> {
+            EditText taskTitleInput = dialogView.findViewById(R.id.taskTitleInput);
+            String taskTitle = taskTitleInput.getText().toString();
+            if (!taskTitle.isEmpty()) {
+                long newTaskId = taskRepository.addTask(taskTitle, selectedDate);
+                if (newTaskId != -1) {
+                    taskList.add(new Task(newTaskId, taskTitle, selectedDate));
+                    taskAdapter.notifyDataSetChanged();
+                    taskDates.add(selectedDate);
+                    calendarView.invalidate();
+                } else {
+                    Toast.makeText(this, "Error adding task", Toast.LENGTH_SHORT).show();
+                }
             }
         });
-        builder.setNegativeButton("Отмена", (dialog, which) -> dialog.cancel());
-
-        builder.show();
-    }
-
-    private void addTask(String taskName) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        ContentValues values = new ContentValues();
-        values.put(DatabaseHelper.COLUMN_TASK_NAME, taskName);
-        values.put(DatabaseHelper.COLUMN_TASK_DATE, selectedDate);
-        values.put(DatabaseHelper.COLUMN_IS_DONE, 0);
-
-        long newRowId = db.insert(DatabaseHelper.TABLE_TASKS, null, values);
-        if (newRowId != -1) {
-            Task task = new Task((int) newRowId, taskName, selectedDate, false);
-            tasks.add(task);
-            adapter.notifyDataSetChanged();
-            datesWithTasks.add(selectedDate);
-            highlightDatesWithTasks();
-            Toast.makeText(this, "Задача добавлена", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this, "Ошибка при добавлении задачи", Toast.LENGTH_SHORT).show();
-        }
+        builder.setNegativeButton("Cancel", null);
+        builder.create().show();
     }
 
     private void deleteTask(Task task) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        db.delete(DatabaseHelper.TABLE_TASKS,
-                DatabaseHelper.COLUMN_ID + " = ?",
-                new String[]{String.valueOf(task.getId())});
-        db.delete(DatabaseHelper.TABLE_SUBTASKS,
-                DatabaseHelper.COLUMN_TASK_ID + " = ?",
-                new String[]{String.valueOf(task.getId())});
+        int deletedRows = taskRepository.deleteTask(task.getId());
+        if (deletedRows > 0) {
+            taskList.remove(task);
+            taskAdapter.notifyDataSetChanged();
+            taskDates.remove(task.getDate());
+            for (Task t : taskList) {
+                if (t.getDate().equals(task.getDate())) {
+                    taskDates.add(t.getDate());
+                    break;
+                }
+            }
+            calendarView.invalidate();
+        } else {
+            Toast.makeText(this, "Error deleting task", Toast.LENGTH_SHORT).show();
+        }
+    }
 
-        tasks.remove(task);
-        adapter.notifyDataSetChanged();
-        loadDatesWithTasks();
-        Toast.makeText(this, "Задача удалена", Toast.LENGTH_SHORT).show();
+    private void openTaskDetail(long taskId) {
+        Intent intent = new Intent(this, TaskDetailActivity.class);
+        intent.putExtra("taskId", taskId);
+        startActivity(intent);
     }
 }

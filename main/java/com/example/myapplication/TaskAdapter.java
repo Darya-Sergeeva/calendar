@@ -1,101 +1,65 @@
 package com.example.myapplication;
 
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.LinearLayout;
+import android.widget.ImageButton;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class TaskAdapter extends ArrayAdapter<Task> {
-    private LayoutInflater inflater;
-    private int layout;
-    private List<Task> tasks;
-    private DatabaseHelper dbHelper;
+public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
 
-    public TaskAdapter(Context context, int resource, List<Task> tasks) {
-        super(context, resource, tasks);
-        this.tasks = tasks;
-        this.layout = resource;
-        this.inflater = LayoutInflater.from(context);
-        this.dbHelper = new DatabaseHelper(context);
+    private List<Task> taskList;
+    private OnTaskClickListener listener;
+
+    public TaskAdapter(List<Task> taskList, OnTaskClickListener listener) {
+        this.taskList = taskList;
+        this.listener = listener;
+    }
+
+    @NonNull
+    @Override
+    public TaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_task, parent, false);
+        return new TaskViewHolder(view);
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
-
-        if (convertView == null) {
-            convertView = inflater.inflate(this.layout, parent, false);
-            viewHolder = new ViewHolder(convertView);
-            convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder) convertView.getTag();
-        }
-
-        Task task = tasks.get(position);
-
-        viewHolder.taskButton.setText(task.getName());
-        viewHolder.dateView.setText(task.getDate());
-        viewHolder.checkBox.setChecked(task.isDone());
-
-        viewHolder.checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            task.setDone(isChecked);
-            SQLiteDatabase db = dbHelper.getWritableDatabase();
-            ContentValues values = new ContentValues();
-            values.put(DatabaseHelper.COLUMN_IS_DONE, isChecked ? 1 : 0);
-            db.update(DatabaseHelper.TABLE_TASKS, values, DatabaseHelper.COLUMN_ID + " = ?", new String[]{String.valueOf(task.getId())});
-        });
-
-        viewHolder.taskButton.setOnClickListener(v -> {
-            Intent intent = new Intent(getContext(), SubtaskActivity.class);
-            intent.putExtra("taskId", task.getId());
-            intent.putExtra("taskName", task.getName());
-            getContext().startActivity(intent);
-        });
-
-        viewHolder.subtasksLayout.removeAllViews();
-        for (String subtask : task.getSubtasks()) {
-            View subtaskView = inflater.inflate(R.layout.subtask_item, null);
-            TextView subtaskName = subtaskView.findViewById(R.id.subtaskName);
-            CheckBox subtaskDone = subtaskView.findViewById(R.id.subtaskDone);
-
-            subtaskName.setText(subtask);
-
-            subtaskDone.setOnCheckedChangeListener((buttonView, isChecked) -> {
-                SQLiteDatabase db = dbHelper.getWritableDatabase();
-                ContentValues values = new ContentValues();
-                values.put(DatabaseHelper.COLUMN_SUBTASK_NAME, subtask);
-                db.update(DatabaseHelper.TABLE_SUBTASKS, values, DatabaseHelper.COLUMN_TASK_ID + " = ? AND " + DatabaseHelper.COLUMN_SUBTASK_NAME + " = ?", new String[]{String.valueOf(task.getId()), subtask});
-            });
-
-            viewHolder.subtasksLayout.addView(subtaskView);
-        }
-
-        return convertView;
+    public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
+        Task task = taskList.get(position);
+        holder.taskTitle.setText(task.getTitle());
+        holder.itemView.setOnClickListener(v -> listener.onTaskClick(task));
+        holder.deleteButton.setOnClickListener(v -> listener.onTaskDeleteClick(task));
     }
 
-    private static class ViewHolder {
-        final Button taskButton;
-        final TextView dateView;
-        final CheckBox checkBox;
-        final LinearLayout subtasksLayout;
+    @Override
+    public int getItemCount() {
+        return taskList.size();
+    }
 
-        ViewHolder(View view) {
-            taskButton = view.findViewById(R.id.task_button);
-            dateView = view.findViewById(R.id.task_date);
-            checkBox = view.findViewById(R.id.task_done);
-            subtasksLayout = view.findViewById(R.id.subtasks_layout);
+    public interface OnTaskClickListener {
+        void onTaskClick(Task task);
+        void onTaskDeleteClick(Task task);
+    }
+
+    public static class TaskViewHolder extends RecyclerView.ViewHolder {
+
+        TextView taskTitle;
+        ImageButton deleteButton;
+
+        public TaskViewHolder(@NonNull View itemView) {
+            super(itemView);
+            taskTitle = itemView.findViewById(R.id.taskTitle);
+            deleteButton = itemView.findViewById(R.id.deleteButton);
         }
     }
 }
+
+
+
 
 
