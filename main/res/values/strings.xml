@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name"></string>
+    <string name="add_task">Добавить задачу</string>
+    <string name="add_event">Добавить событие</string>
+    <string name="event_name">Название события</string>
+    <string name="task_name">Название задачи</string>
+    <string name="add">Добавить</string>
+    <string name="cancel">Отмена</string>
+    <string name="choose_color">Выбрать цвет</string>
+    <string name="choose_action">Выберите действие</string>
+    <string name="delete_event">Удалить</string>
+
+</resources>
+

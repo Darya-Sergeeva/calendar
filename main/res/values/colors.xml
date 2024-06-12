@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#03DAC5</color>
+    <color name="eventColor1">#F44336</color>
+    <color name="eventColor2">#E91E63</color>
+    <color name="eventColor3">#9C27B0</color>
+    <color name="eventColor4">#673AB7</color>
+    <color name="eventColor5">#3F51B5</color>
+    <color name="red">#DA0303</color>
+    <color name="white">#FFFFFF</color>
+    <color name="primaryColor">#03DAC5</color>
+    <color name="primaryDarkColor">#018786</color>
+    <color name="secondaryColor">#03DAC5</color>
+    <color name="primaryTextColor">#FFFFFF</color>
+    <color name="secondaryTextColor">#000000</color>
+    <color name="default_color_1">#FF0000</color>
+    <color name="default_color_2">#00FF00</color>
+    <color name="default_color_3">#0000FF</color>
+    <color name="default_color_4">#FFFF00</color>
+    <color name="default_color_5">#FF00FF</color>
+    <color name="default_color_6">#00FFFF</color>
+    <color name="default_color_7">#FFA500</color>
+    <color name="default_color_8">#800080</color>
+    <color name="default_color_9">#A52A2A</color>
+    <color name="default_color_10">#008080</color>
+    <color name="default_color_11">#000080</color>
+    <color name="default_color_12">#808000</color>
+</resources>
+
+
+
+
+
+
+
+
+

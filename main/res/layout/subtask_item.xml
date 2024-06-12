@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp"
+    android:background="@android:color/white">
+
+    <CheckBox
+        android:id="@+id/subtaskCheckbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:scaleX="1.5"
+        android:scaleY="1.5"
+        android:buttonTint="#03DAC5"/>
+
+    <TextView
+        android:id="@+id/subtaskName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/subtaskCheckbox"
+        android:layout_marginStart="8dp"
+        android:textSize="18sp"/>
+
+    <ImageButton
+        android:id="@+id/deleteSubtaskButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:src="@android:drawable/ic_delete"/>
+</RelativeLayout>
+
+
+

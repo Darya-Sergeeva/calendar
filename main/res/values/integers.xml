@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer-array name="default_color_picker_colors">
+        <item>@color/default_color_1</item>
+        <item>@color/default_color_2</item>
+        <item>@color/default_color_3</item>
+        <item>@color/default_color_4</item>
+        <item>@color/default_color_5</item>
+        <item>@color/default_color_6</item>
+        <item>@color/default_color_7</item>
+        <item>@color/default_color_8</item>
+        <item>@color/default_color_9</item>
+        <item>@color/default_color_10</item>
+        <item>@color/default_color_11</item>
+        <item>@color/default_color_12</item>
+    </integer-array>
+</resources>
