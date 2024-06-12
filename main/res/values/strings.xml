@@ -1,7 +1,0 @@
-<resources>
-    <string name="app_name">My Application</string>
-    <string name="delete_task">Удалить задачу</string>
-    <string name="dialog_add_task">Введите название задачи:</string>
-    <string name="taskTitleInput">Название задачи</string>
-
-</resources>
