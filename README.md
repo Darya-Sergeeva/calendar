@@ -24,7 +24,7 @@
 
 1. Клонируйте репозиторий:
     ```sh
-    git clone https://github.com/yourusername/task-management-app.git
+    git clone https://github.com/Darya-Sergeeva/calendar
     ```
 2. Откройте проект в Android Studio:
     - Выберите "Open an existing Android Studio project"
