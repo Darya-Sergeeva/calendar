@@ -76,9 +76,6 @@
 4. Запушьте изменения в ветку (`git push origin feature/your-feature`)
 5. Создайте Pull Request
 
-## Лицензия
-
-Этот проект лицензирован под MIT License. Подробнее см. файл [LICENSE](LICENSE).
 
 ## Контакты
 
